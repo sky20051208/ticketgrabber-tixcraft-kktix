@@ -1,3 +1,5 @@
+# gui.py (正式版 V17.0 - 支援 Tixcraft/KKTIX/TicketPlus)
+
 import tkinter as tk
 from tkinter import messagebox, ttk
 import subprocess
@@ -11,9 +13,11 @@ PAUSE_FILE = "pause.lock"
 class TicketBotLauncher:
     def __init__(self, root):
         self.root = root
-        self.root.title("Tixcraft/KKTIX 搶票機器人控制台 V16.0")
-        self.root.geometry("550x720") # 高度稍微增加以容納平台選單
+        # [V17.0] 更新標題
+        self.root.title("全平台搶票機器人控制台 V17.0 (Tixcraft/KKTIX/TicketPlus)")
+        self.root.geometry("550x750") # 高度稍微增加
         
+        # 啟動時自動清除殘留的暫停檔
         if os.path.exists(PAUSE_FILE):
             try: os.remove(PAUSE_FILE)
             except: pass
@@ -27,15 +31,17 @@ class TicketBotLauncher:
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
     def create_widgets(self):
-        title_label = tk.Label(self.root, text="🚀 搶票啟動器 (拓元/KKTIX)", font=("Microsoft JhengHei", 16, "bold"))
+        # [V17.0] 更新標題文字
+        title_label = tk.Label(self.root, text="🚀 搶票啟動器 (拓元/KKTIX/遠大)", font=("Microsoft JhengHei", 16, "bold"))
         title_label.pack(pady=15)
 
         frame = tk.Frame(self.root)
         frame.pack(padx=20, pady=5, fill="x")
 
-        # --- [V16.0 新增] 平台選擇 ---
+        # --- [V17.0 更新] 平台選擇 ---
         tk.Label(frame, text="選擇搶票平台 (PLATFORM):", font=("Microsoft JhengHei", 10, "bold"), fg="red").pack(anchor="w")
-        self.combo_platform = ttk.Combobox(frame, values=["TIXCRAFT", "KKTIX"], state="readonly", font=("Consolas", 10))
+        # 新增 "TICKETPLUS" 選項
+        self.combo_platform = ttk.Combobox(frame, values=["TIXCRAFT", "KKTIX", "TICKETPLUS"], state="readonly", font=("Consolas", 10))
         self.combo_platform.current(0)
         self.combo_platform.pack(fill="x", pady=(0, 10))
 
@@ -54,7 +60,7 @@ class TicketBotLauncher:
         self.entry_time = tk.Entry(frame, font=("Consolas", 10))
         self.entry_time.pack(fill="x", pady=(0, 10))
 
-        # --- [V15.0 新增] 日期關鍵字 ---
+        # --- 日期關鍵字 ---
         self.var_enable_date = tk.BooleanVar(value=False)
         self.chk_date = tk.Checkbutton(frame, text="啟用日期篩選 (WANTED_DATE_KEYWORD)", variable=self.var_enable_date, command=self.on_date_toggle, font=("Microsoft JhengHei", 10, "bold"), fg="#006400")
         self.chk_date.pack(anchor="w", pady=(5, 0))
@@ -126,9 +132,13 @@ class TicketBotLauncher:
             self.entry_area.config(state="disabled", bg="#f0f0f0")
 
     def toggle_pause(self):
+        # 修正: 使用更安全的檔案操作，避免 Race Condition
         if os.path.exists(PAUSE_FILE):
-            try: os.remove(PAUSE_FILE); self.btn_pause.config(text="⏸️ 暫停", bg="#FFD700")
-            except: pass
+            try: 
+                os.remove(PAUSE_FILE)
+            except OSError: pass # 檔案已不存在則忽略
+            
+            self.btn_pause.config(text="⏸️ 暫停", bg="#FFD700")
         else:
             try:
                 with open(PAUSE_FILE, "w") as f: f.write("paused")
@@ -140,7 +150,7 @@ class TicketBotLauncher:
         try:
             with open(CONFIG_FILE, "r", encoding="utf-8") as f: content = f.read()
             
-            # [V16.0] 讀取平台設定
+            # 讀取平台設定
             platform_match = re.search(r'PLATFORM\s*=\s*["\'](.*?)["\']', content)
             if platform_match: self.combo_platform.set(platform_match.group(1))
 
@@ -194,7 +204,6 @@ class TicketBotLauncher:
             date_val = self.entry_date.get().strip() if self.var_enable_date.get() else ""
             
             for line in lines:
-                # [V16.0] 儲存平台設定
                 if line.strip().startswith("PLATFORM"): 
                     new_lines.append(f'PLATFORM = "{self.combo_platform.get()}"\n')
                 elif line.strip().startswith("TIME_WATCH_URL"): 
