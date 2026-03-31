@@ -12,11 +12,11 @@ PLATFORM = "TIXCRAFT"
 # --- 共用搶票參數 (所有平台通用) ---
 WANTED_TICKET_COUNT = "2"
 WANTED_AREA_KEYWORD = "5880"
-WANTED_DATE_KEYWORD = ""
+WANTED_DATE_KEYWORD = "6/28"
 
 # --- 時間與監控 (所有平台通用) ---
 ENABLE_TIME_WATCHER = True
-TARGET_TIME = "11:00:00"
+TARGET_TIME = "12:00:00"
 TIME_WATCH_URL = "https://tixcraft.com/activity/game/26_itzy"
 
 # --- 拓元 (Tixcraft) 專用設定 ---

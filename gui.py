@@ -1,4 +1,4 @@
-# gui.py (正式版 V17.0 - 支援 Tixcraft/KKTIX/TicketPlus)
+# gui.py (正式版 V17.1 - 修正打包後路徑辨識問題)
 
 import tkinter as tk
 from tkinter import messagebox, ttk
@@ -14,7 +14,7 @@ class TicketBotLauncher:
     def __init__(self, root):
         self.root = root
         # [V17.0] 更新標題
-        self.root.title("全平台搶票機器人控制台 V17.0 (Tixcraft/KKTIX/TicketPlus)")
+        self.root.title("全平台搶票機器人控制台 V17.1 (Tixcraft/KKTIX/TicketPlus)")
         self.root.geometry("550x750") # 高度稍微增加
         
         # 啟動時自動清除殘留的暫停檔
@@ -243,12 +243,20 @@ class TicketBotLauncher:
                 cmd = []
                 working_dir = os.getcwd()
                 if getattr(sys, 'frozen', False):
+                    # 【關鍵修復】尋找 TicketBot_Complete.exe
                     base_path = os.path.dirname(sys.executable)
-                    main_exe_path = os.path.join(base_path, "main.exe")
+                    main_exe_path = os.path.join(base_path, "TicketBot_Complete.exe")
+                    
                     if not os.path.exists(main_exe_path):
-                        fallback_path = os.path.join(base_path, "TicketBot.exe")
-                        if os.path.exists(fallback_path): main_exe_path = fallback_path
-                        else: return
+                        # 備用方案 (保留相容舊版的名稱)
+                        fallback_1 = os.path.join(base_path, "TicketBot.exe")
+                        fallback_2 = os.path.join(base_path, "main.exe")
+                        if os.path.exists(fallback_1): main_exe_path = fallback_1
+                        elif os.path.exists(fallback_2): main_exe_path = fallback_2
+                        else:
+                            messagebox.showerror("啟動失敗", f"找不到主程式檔案！\n請確認 TicketBot_Complete.exe 是否與此啟動器放在同一個資料夾。")
+                            return
+                            
                     cmd = [main_exe_path]
                     working_dir = base_path
                 else:
@@ -267,7 +275,11 @@ class TicketBotLauncher:
 
     def on_closing(self):
         if self.bot_process and self.bot_process.poll() is None: self.bot_process.kill()
-        if os.name == 'nt': os.system("taskkill /f /im main.exe >nul 2>&1")
+        if os.name == 'nt': 
+            # 【關鍵修復】確保關閉視窗時能砍掉正確的主程式
+            os.system("taskkill /f /im TicketBot_Complete.exe >nul 2>&1")
+            os.system("taskkill /f /im main.exe >nul 2>&1")
+            os.system("taskkill /f /im TicketBot.exe >nul 2>&1")
         self.root.destroy()
 
 if __name__ == "__main__":
