@@ -28,16 +28,18 @@ except ImportError:
     sys.exit(1)
 
 from timeWatcher import TimeWatcher
-PAUSE_FILE = "pause.lock"
+from common import check_pause as _check_pause, launch_browser
+
+_TAG = "KKTIX"
+
+
+async def check_pause():
+    await _check_pause(_TAG)
+
 
 # ----------------------------------------------------
 # 輔助函式
 # ----------------------------------------------------
-async def check_pause():
-    if os.path.exists(PAUSE_FILE):
-        while os.path.exists(PAUSE_FILE):
-            await asyncio.sleep(1)
-
 async def fetch_and_print_logs(tab):
     """將瀏覽器端 JS 記錄的操作日誌拉回 Python 並印出"""
     try:
@@ -91,11 +93,8 @@ async def run_kktix_setup():
     print("🚀 KKTIX 終極雙軌模式啟動。")
     print("🛡️ [系統] 載入光速注入、Angular 原生點擊、全動作回報與防禦機制")
     
-    browser = await uc.start(
-        headless=False,
-        browser_args=["--start-maximized", "--disable-notifications"]
-    )
-    
+    browser = await launch_browser()
+
     try:
         now = datetime.now()
         target_dt = datetime.strptime(TARGET_TIME, "%H:%M:%S").replace(

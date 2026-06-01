@@ -1,0 +1,14 @@
+*
+!.gitignore
+!tixcraft.py
+!common.py
+!main.py
+!config.py
+!timeWatcher.py
+!gui.py
+!kktix/
+!kktix/kkbot.py
+!ticketplus/
+!ticketplus/ticketplusbot.py
+!captchaAI/
+!captchaAI/predict.py

@@ -11,17 +11,17 @@ PLATFORM = "TIXCRAFT"
 
 # --- 共用搶票參數 (所有平台通用) ---
 WANTED_TICKET_COUNT = "2"
-WANTED_AREA_KEYWORD = "5880"
-WANTED_DATE_KEYWORD = "6/28"
+WANTED_AREA_KEYWORD = ""
+WANTED_DATE_KEYWORD = ""
 
 # --- 時間與監控 (所有平台通用) ---
-ENABLE_TIME_WATCHER = True
-TARGET_TIME = "12:00:00"
-TIME_WATCH_URL = "https://tixcraft.com/activity/game/26_itzy"
+ENABLE_TIME_WATCHER = False
+TARGET_TIME = "19:00:00"
+TIME_WATCH_URL = "https://tixcraft.com/activity/game/26_aespa"
 
 # --- 拓元 (Tixcraft) 專用設定 ---
 TIXCRAFT_URL = "https://tixcraft.com/"
-AREA_AUTO_SELECT_MODE = "關鍵字優先"
+AREA_AUTO_SELECT_MODE = "隨機"
 EXCLUDE_AREA_KEYWORD = "輪椅;身障;身心;障礙;Restricted View;燈柱遮蔽;視線不完整;身障票"
 PRE_ORDER_CODE = ""
 

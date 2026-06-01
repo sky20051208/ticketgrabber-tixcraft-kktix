@@ -7,8 +7,14 @@ import os
 import sys
 import re
 
-CONFIG_FILE = "config.py"
-PAUSE_FILE = "pause.lock" 
+if getattr(sys, 'frozen', False):
+    _BASE_DIR = os.path.dirname(sys.executable)  # 打包後：exe 所在資料夾
+else:
+    _BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # 開發時：py 所在資料夾
+
+CONFIG_FILE = os.path.join(_BASE_DIR, "config.py")
+PAUSE_FILE = os.path.join(_BASE_DIR, "pause.lock")
+
 
 class TicketBotLauncher:
     def __init__(self, root):

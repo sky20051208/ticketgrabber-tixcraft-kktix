@@ -24,23 +24,17 @@ if root_dir not in sys.path:
 
 from timeWatcher import TimeWatcher
 from config import (
-    WANTED_TICKET_COUNT, WANTED_AREA_KEYWORD, WANTED_DATE_KEYWORD, 
+    WANTED_TICKET_COUNT, WANTED_AREA_KEYWORD, WANTED_DATE_KEYWORD,
     TARGET_TIME, TIME_WATCH_URL, ENABLE_TIME_WATCHER,
-    AREA_AUTO_SELECT_MODE 
+    AREA_AUTO_SELECT_MODE
 )
+from common import check_pause as _check_pause, launch_browser
 
-PAUSE_FILE = "pause.lock"
+_TAG = "Ticketplus"
 
-# ----------------------------------------------------
-# 輔助函式
-# ----------------------------------------------------
 
 async def check_pause():
-    if os.path.exists(PAUSE_FILE):
-        print("\n⏸️ [Ticketplus] 暫停中...", end='\r')
-        while os.path.exists(PAUSE_FILE):
-            await asyncio.sleep(1)
-        print("\n▶️ [Ticketplus] 繼續！       ")
+    await _check_pause(_TAG)
 
 # ----------------------------------------------------
 # 頁面處理邏輯
@@ -392,7 +386,7 @@ async def try_find_and_order(tab, tickets_added_flag, timeout=5):
 
 async def run_ticketplus_setup():
     print("🚀 TicketPlus (V8+ 持續掃描版) 啟動...")
-    browser = await uc.start(headless=False, browser_args=["--start-maximized", "--disable-notifications"])
+    browser = await launch_browser()
     tab = await browser.get("https://ticketplus.com.tw/")
     return browser, tab
 
